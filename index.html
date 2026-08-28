@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Security Scanner</title>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #05070a;
+    color: #f5f7fa;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 30px 15px;
+    box-sizing: border-box;
+  }
+
+  #scanner {
+    width: 100%;
+    max-width: 700px;
+    background: #0a0d12;
+    border: 1px solid #17202c;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.7);
+    box-sizing: border-box;
+  }
+
+  /* HEADER */
+
+  #header {
+    text-align: center;
+    padding: 32px 20px 27px;
+    background: #070a0f;
+    border-bottom: 1px solid #17202c;
+  }
+
+  #header h1 {
+    margin: 0 0 9px;
+    color: #ffffff;
+    font-size: 29px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  #header p {
+    margin: 0;
+    color: #718096;
+    font-size: 13px;
+  }
+
+  /* CONTENT */
+
+  #content {
+    padding: 25px;
+  }
+
+  .sectionTitle {
+    margin: 0 0 10px;
+    color: #5d7692;
+    font-size: 10px;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* INPUTS */
+
+  .inputGroup {
+    margin-bottom: 14px;
+  }
+
+  .inputLabel {
+    display: block;
+    margin-bottom: 6px;
+    color: #8ca3ba;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  #usernameInput,
+  #passwordInput {
+    width: 100%;
+    padding: 14px;
+    background: #05070a;
+    color: #ffffff;
+    border: 1px solid #263446;
+    outline: none;
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  #usernameInput::placeholder,
+  #passwordInput::placeholder {
+    color: #526174;
+  }
+
+  #usernameInput:focus,
+  #passwordInput:focus {
+    border-color: #168cff;
+    box-shadow: 0 0 0 1px rgba(22, 140, 255, 0.2);
+  }
+
+  #passwordArea {
+    display: flex;
+    gap: 8px;
+  }
+
+  #passwordInput {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #toggleButton {
+    width: 85px;
+    background: #0b1119;
+    color: #7fa4c7;
+    border: 1px solid #263446;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  #toggleButton:hover {
+    background: #0e1722;
+    color: #3da3ff;
+    border-color: #168cff;
+  }
+
+  /* SCAN BUTTON */
+
+  #scanButton {
+    width: 100%;
+    padding: 14px;
+    margin-top: 3px;
+    background: #0b4f8a;
+    color: #ffffff;
+    border: 1px solid #168cff;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  #scanButton:hover {
+    background: #0964ad;
+    box-shadow: 0 0 18px rgba(22, 140, 255, 0.18);
+  }
+
+  #scanButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  #scanStatus {
+    min-height: 22px;
+    margin: 15px 0;
+    color: #6282a0;
+    text-align: center;
+    font-size: 11px;
+  }
+
+  /* RESULTS */
+
+  #results {
+    display: none;
+  }
+
+  #results.visible {
+    display: block;
+  }
+
+  .resultSection {
+    margin-bottom: 20px;
+  }
+
+  .resultBox {
+    background: #080c11;
+    border: 1px solid #17202c;
+    margin-bottom: 7px;
+    padding: 13px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .resultBox:hover {
+    border-color: #263b52;
+  }
+
+  .resultName {
+    color: #dce5ee;
+    font-size: 13px;
+  }
+
+  .resultStatus {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .pass {
+    color: #38d39f;
+  }
+
+  .fail {
+    color: #ff5f6d;
+  }
+
+  /* SCORE */
+
+  #scoreArea {
+    margin-top: 20px;
+    padding: 22px;
+    background: #070b10;
+    border: 1px solid #1a2b3d;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #scoreArea::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #168cff;
+    box-shadow: 0 0 12px rgba(22, 140, 255, 0.6);
+  }
+
+  #scoreLabel {
+    color: #5d7692;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+  }
+
+  #score {
+    margin: 7px 0;
+    color: #3da3ff;
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-shadow: 0 0 20px rgba(22, 140, 255, 0.25);
+  }
+
+  #rating {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .weak {
+    color: #ff5f6d;
+  }
+
+  .medium {
+    color: #ffc857;
+  }
+
+  .strong {
+    color: #38d39f;
+  }
+
+  #message {
+    margin-top: 14px;
+    text-align: center;
+    color: #7b91a7;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* RESET */
+
+  #resetButton {
+    display: none;
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px;
+    background: transparent;
+    color: #68819a;
+    border: 1px solid #263446;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  #resetButton.visible {
+    display: block;
+  }
+
+  #resetButton:hover {
+    color: #3da3ff;
+    border-color: #168cff;
+    background: #080f17;
+  }
+
+  /* PRIVACY */
+
+  #privacy {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #17202c;
+    color: #526174;
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+
+  /* ==========================================
+     MOBILE
+     ========================================== */
+
+  @media (max-width: 600px) {
+
+    body {
+      padding: 0;
+      display: block;
+    }
+
+    #scanner {
+      width: 100%;
+      max-width: none;
+      border: 0;
+      box-shadow: none;
+    }
+
+    #header {
+      padding: 14px 12px 11px;
+    }
+
+    #header h1 {
+      font-size: 18px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    #header p {
+      font-size: 9px;
+    }
+
+    #content {
+      padding: 11px;
+    }
+
+    .sectionTitle {
+      font-size: 8px;
+      margin-bottom: 5px;
+      letter-spacing: 1.4px;
+    }
+
+    .inputGroup {
+      margin-bottom: 7px;
+    }
+
+    .inputLabel {
+      margin-bottom: 3px;
+      font-size: 8px;
+    }
+
+    #usernameInput,
+    #passwordInput {
+      padding: 9px 10px;
+      font-size: 13px;
+      height: 37px;
+    }
+
+    #passwordArea {
+      gap: 5px;
+    }
+
+    #toggleButton {
+      width: 60px;
+      font-size: 8px;
+    }
+
+    #scanButton {
+      margin-top: 1px;
+      padding: 10px;
+      font-size: 9px;
+      height: 36px;
+    }
+
+    #scanStatus {
+      min-height: 14px;
+      margin: 6px 0;
+      font-size: 8px;
+    }
+
+    .resultSection {
+      margin-bottom: 8px;
+    }
+
+    .resultBox {
+      padding: 7px 9px;
+      margin-bottom: 4px;
+      min-height: 31px;
+    }
+
+    .resultName {
+      font-size: 10px;
+    }
+
+    .resultStatus {
+      font-size: 8px;
+    }
+
+    #scoreArea {
+      margin-top: 7px;
+      padding: 10px;
+    }
+
+    #scoreLabel {
+      font-size: 7px;
+    }
+
+    #score {
+      margin: 2px 0;
+      font-size: 28px;
+    }
+
+    #rating {
+      font-size: 9px;
+    }
+
+    #message {
+      margin-top: 6px;
+      font-size: 8px;
+    }
+
+    #resetButton {
+      margin-top: 6px;
+      padding: 7px;
+      font-size: 8px;
+    }
+
+    #privacy {
+      margin-top: 7px;
+      padding-top: 7px;
+      font-size: 7px;
+      line-height: 1.3;
+    }
+  }
+
+
+  /* VERY SHORT PHONE SCREENS */
+
+  @media (max-width: 600px) and (max-height: 700px) {
+
+    #header {
+      padding-top: 10px;
+      padding-bottom: 8px;
+    }
+
+    #header h1 {
+      font-size: 16px;
+    }
+
+    #content {
+      padding: 8px;
+    }
+
+    .inputGroup {
+      margin-bottom: 5px;
+    }
+
+    #usernameInput,
+    #passwordInput {
+      height: 34px;
+      padding: 8px;
+    }
+
+    #scanButton {
+      height: 33px;
+      padding: 7px;
+    }
+
+    #scanStatus {
+      margin: 4px 0;
+      min-height: 11px;
+    }
+
+    .resultBox {
+      min-height: 28px;
+      padding: 6px 8px;
+    }
+
+    #scoreArea {
+      padding: 7px;
+      margin-top: 5px;
+    }
+
+    #score {
+      font-size: 24px;
+    }
+
+    #message {
+      margin-top: 4px;
+    }
+
+    #privacy {
+      margin-top: 5px;
+      padding-top: 5px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div id="scanner">
+
+  <div id="header">
+    <h1>Password Security Scanner</h1>
+    <p>Analyze credentials locally in your browser</p>
+  </div>
+
+  <div id="content">
+
+    <div class="sectionTitle">
+      Credential Check
+    </div>
+
+
+    <!-- USERNAME -->
+
+    <div class="inputGroup">
+
+      <label
+        class="inputLabel"
+        for="usernameInput">
+        Username
+      </label>
+
+      <input
+        type="text"
+        id="usernameInput"
+        name="scanner_username"
+        placeholder="Enter username"
+        autocomplete="off"
+        autocapitalize="none"
+        spellcheck="false"
+      >
+
+    </div>
+
+
+    <!-- PASSWORD -->
+
+    <div class="inputGroup">
+
+      <label
+        class="inputLabel"
+        for="passwordInput">
+        Password
+      </label>
+
+      <div id="passwordArea">
+
+        <!--
+          This is intentionally a TEXT input.
+          JavaScript handles the masking so Chrome
+          does not treat it as a login password field.
+        -->
+
+        <input
+          type="text"
+          id="passwordInput"
+          name="scanner_password"
+          placeholder="Enter password to test"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          inputmode="text"
+        >
+
+        <button
+          type="button"
+          id="toggleButton">
+          Show
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <button
+      type="button"
+      id="scanButton">
+      Scan Credentials
+    </button>
+
+
+    <div id="scanStatus"></div>
+
+
+    <!-- RESULTS -->
+
+    <div id="results">
+
+
+      <!-- USERNAME RESULTS -->
+
+      <div class="resultSection">
+
+        <div class="sectionTitle">
+          Username Analysis
+        </div>
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            Username entered
+          </span>
+
+          <span
+            id="usernamePresentResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            More than 5 characters
+          </span>
+
+          <span
+            id="usernameLengthResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- PASSWORD RESULTS -->
+
+      <div class="resultSection">
+
+        <div class="sectionTitle">
+          Password Analysis
+        </div>
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            Minimum 8 characters
+          </span>
+
+          <span
+            id="lengthResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            Uppercase letter
+          </span>
+
+          <span
+            id="uppercaseResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            Lowercase letter
+          </span>
+
+          <span
+            id="lowercaseResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            Number
+          </span>
+
+          <span
+            id="numberResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+
+        <div class="resultBox">
+
+          <span class="resultName">
+            Special character
+          </span>
+
+          <span
+            id="specialResult"
+            class="resultStatus">
+            —
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- PASSWORD SCORE -->
+
+      <div id="scoreArea">
+
+        <div id="scoreLabel">
+          Password Security Score
+        </div>
+
+        <div id="score">
+          0%
+        </div>
+
+        <div id="rating">
+          —
+        </div>
+
+      </div>
+
+
+      <div id="message"></div>
+
+
+      <button
+        type="button"
+        id="resetButton">
+        Scan Another Credential
+      </button>
+
+    </div>
+
+
+    <div id="privacy">
+      Your username and password are analyzed locally in your browser.
+      They are not stored, transmitted, or collected.
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  const usernameInput =
+    document.getElementById("usernameInput");
+
+  const passwordInput =
+    document.getElementById("passwordInput");
+
+  const scanButton =
+    document.getElementById("scanButton");
+
+  const toggleButton =
+    document.getElementById("toggleButton");
+
+  const resetButton =
+    document.getElementById("resetButton");
+
+  const scanStatus =
+    document.getElementById("scanStatus");
+
+  const results =
+    document.getElementById("results");
+
+
+  /*
+   * REAL PASSWORD VALUE
+   *
+   * The visible input is just a text field.
+   * The actual password is stored only in this
+   * JavaScript variable while the page is open.
+   */
+
+  let realPassword = "";
+
+  let passwordVisible = false;
+
+
+  /*
+   * UPDATE PASSWORD DISPLAY
+   */
+
+  function updatePasswordDisplay() {
+
+    if (passwordVisible) {
+
+      passwordInput.value =
+        realPassword;
+
+    } else {
+
+      passwordInput.value =
+        "•".repeat(realPassword.length);
+
+    }
+
+  }
+
+
+  /*
+   * PASSWORD INPUT
+   *
+   * We manually capture the characters instead
+   * of letting the browser manage a password field.
+   */
+
+  passwordInput.addEventListener(
+    "keydown",
+    function(event) {
+
+      /*
+       * Allow navigation keys.
+       */
+
+      if (
+        event.key === "Tab" ||
+        event.key === "ArrowLeft" ||
+        event.key === "ArrowRight" ||
+        event.key === "ArrowUp" ||
+        event.key === "ArrowDown"
+      ) {
+        return;
+      }
+
+
+      /*
+       * Backspace.
+       */
+
+      if (event.key === "Backspace") {
+
+        event.preventDefault();
+
+        realPassword =
+          realPassword.slice(0, -1);
+
+        updatePasswordDisplay();
+
+        return;
+      }
+
+
+      /*
+       * Delete.
+       */
+
+      if (event.key === "Delete") {
+
+        event.preventDefault();
+
+        realPassword = "";
+
+        updatePasswordDisplay();
+
+        return;
+      }
+
+
+      /*
+       * Enter.
+       */
+
+      if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        scanCredentials();
+
+        return;
+      }
+
+
+      /*
+       * Ignore control combinations.
+       */
+
+      if (
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+
+      /*
+       * Only capture printable characters.
+       */
+
+      if (event.key.length === 1) {
+
+        event.preventDefault();
+
+        realPassword +=
+          event.key;
+
+        updatePasswordDisplay();
+
+      }
+
+    }
+  );
+
+
+  /*
+   * Prevent Chrome from replacing our
+   * masked value through paste.
+   */
+
+  passwordInput.addEventListener(
+    "paste",
+    function(event) {
+
+      event.preventDefault();
+
+      const pastedText =
+        event.clipboardData.getData("text");
+
+      realPassword +=
+        pastedText;
+
+      updatePasswordDisplay();
+
+    }
+  );
+
+
+  /*
+   * SHOW / HIDE
+   */
+
+  toggleButton.addEventListener(
+    "click",
+    function() {
+
+      passwordVisible =
+        !passwordVisible;
+
+      toggleButton.textContent =
+        passwordVisible
+          ? "Hide"
+          : "Show";
+
+      updatePasswordDisplay();
+
+      passwordInput.focus();
+
+    }
+  );
+
+
+  /*
+   * HELPER
+   */
+
+  function sleep(ms) {
+
+    return new Promise(resolve =>
+      setTimeout(resolve, ms)
+    );
+
+  }
+
+
+  /*
+   * RESULT DISPLAY
+   */
+
+  function setResult(
+    element,
+    passed,
+    passText,
+    failText
+  ) {
+
+    element.textContent =
+      passed
+        ? passText
+        : failText;
+
+    element.classList.remove(
+      "pass",
+      "fail"
+    );
+
+    element.classList.add(
+      passed
+        ? "pass"
+        : "fail"
+    );
+
+  }
+
+
+  /*
+   * SCAN
+   */
+
+  async function scanCredentials() {
+
+    const username =
+      usernameInput.value.trim();
+
+    const password =
+      realPassword;
+
+
+    /*
+     * Empty fields
+     */
+
+    if (!username && !password) {
+
+      scanStatus.textContent =
+        "Enter a username and password to begin the scan.";
+
+      results.classList.remove(
+        "visible"
+      );
+
+      return;
+
+    }
+
+
+    if (!username) {
+
+      scanStatus.textContent =
+        "Please enter a username.";
+
+      results.classList.remove(
+        "visible"
+      );
+
+      return;
+
+    }
+
+
+    if (!password) {
+
+      scanStatus.textContent =
+        "Please enter a password.";
+
+      results.classList.remove(
+        "visible"
+      );
+
+      return;
+
+    }
+
+
+    scanButton.disabled =
+      true;
+
+
+    resetButton.classList.remove(
+      "visible"
+    );
+
+
+    results.classList.add(
+      "visible"
+    );
+
+
+    const usernamePresentResult =
+      document.getElementById(
+        "usernamePresentResult"
+      );
+
+    const usernameLengthResult =
+      document.getElementById(
+        "usernameLengthResult"
+      );
+
+    const lengthResult =
+      document.getElementById(
+        "lengthResult"
+      );
+
+    const uppercaseResult =
+      document.getElementById(
+        "uppercaseResult"
+      );
+
+    const lowercaseResult =
+      document.getElementById(
+        "lowercaseResult"
+      );
+
+    const numberResult =
+      document.getElementById(
+        "numberResult"
+      );
+
+    const specialResult =
+      document.getElementById(
+        "specialResult"
+      );
+
+
+    const resultElements = [
+
+      usernamePresentResult,
+      usernameLengthResult,
+      lengthResult,
+      uppercaseResult,
+      lowercaseResult,
+      numberResult,
+      specialResult
+
+    ];
+
+
+    resultElements.forEach(element => {
+
+      element.textContent =
+        "Checking...";
+
+      element.classList.remove(
+        "pass",
+        "fail"
+      );
+
+    });
+
+
+    document.getElementById("score")
+      .textContent =
+      "Scanning...";
+
+
+    document.getElementById("rating")
+      .textContent =
+      "Analyzing";
+
+
+    document.getElementById("rating")
+      .className = "";
+
+
+    let score = 0;
+
+
+    /*
+     * USERNAME CHECK 1
+     */
+
+    scanStatus.textContent =
+      "Checking username...";
+
+    await sleep(250);
+
+
+    const usernamePresent =
+      username.length > 0;
+
+
+    setResult(
+      usernamePresentResult,
+      usernamePresent,
+      "Pass",
+      "Missing"
+    );
+
+
+    /*
+     * USERNAME CHECK 2
+     */
+
+    scanStatus.textContent =
+      "Checking username length...";
+
+    await sleep(250);
+
+
+    const usernameLongEnough =
+      username.length > 5;
+
+
+    setResult(
+      usernameLengthResult,
+      usernameLongEnough,
+      "Pass",
+      "Too Short"
+    );
+
+
+    /*
+     * PASSWORD CHECK 1
+     */
+
+    scanStatus.textContent =
+      "Checking password length...";
+
+    await sleep(250);
+
+
+    const lengthPassed =
+      password.length >= 8;
+
+
+    if (lengthPassed) {
+      score++;
+    }
+
+
+    setResult(
+      lengthResult,
+      lengthPassed,
+      "Pass",
+      "Too Short"
+    );
+
+
+    /*
+     * PASSWORD CHECK 2
+     */
+
+    scanStatus.textContent =
+      "Checking uppercase letters...";
+
+    await sleep(250);
+
+
+    const uppercasePassed =
+      /[A-Z]/.test(password);
+
+
+    if (uppercasePassed) {
+      score++;
+    }
+
+
+    setResult(
+      uppercaseResult,
+      uppercasePassed,
+      "Pass",
+      "Missing"
+    );
+
+
+    /*
+     * PASSWORD CHECK 3
+     */
+
+    scanStatus.textContent =
+      "Checking lowercase letters...";
+
+    await sleep(250);
+
+
+    const lowercasePassed =
+      /[a-z]/.test(password);
+
+
+    if (lowercasePassed) {
+      score++;
+    }
+
+
+    setResult(
+      lowercaseResult,
+      lowercasePassed,
+      "Pass",
+      "Missing"
+    );
+
+
+    /*
+     * PASSWORD CHECK 4
+     */
+
+    scanStatus.textContent =
+      "Checking numbers...";
+
+    await sleep(250);
+
+
+    const numberPassed =
+      /[0-9]/.test(password);
+
+
+    if (numberPassed) {
+      score++;
+    }
+
+
+    setResult(
+      numberResult,
+      numberPassed,
+      "Pass",
+      "Missing"
+    );
+
+
+    /*
+     * PASSWORD CHECK 5
+     */
+
+    scanStatus.textContent =
+      "Checking special characters...";
+
+    await sleep(250);
+
+
+    const specialPassed =
+      /[^A-Za-z0-9]/.test(password);
+
+
+    if (specialPassed) {
+      score++;
+    }
+
+
+    setResult(
+      specialResult,
+      specialPassed,
+      "Pass",
+      "Missing"
+    );
+
+
+    /*
+     * PASSWORD SCORE
+     */
+
+    const percentage =
+      (score / 5) * 100;
+
+
+    let rating;
+    let ratingClass;
+
+
+    if (percentage <= 40) {
+
+      rating =
+        "Weak";
+
+      ratingClass =
+        "weak";
+
+    } else if (percentage <= 80) {
+
+      rating =
+        "Medium";
+
+      ratingClass =
+        "medium";
+
+    } else {
+
+      rating =
+        "Strong";
+
+      ratingClass =
+        "strong";
+
+    }
+
+
+    document.getElementById("score")
+      .textContent =
+      percentage.toFixed(0) + "%";
+
+
+    const ratingElement =
+      document.getElementById("rating");
+
+
+    ratingElement.textContent =
+      rating;
+
+
+    ratingElement.className =
+      ratingClass;
+
+
+    /*
+     * FINAL MESSAGE
+     */
+
+    const usernameValid =
+      usernamePresent &&
+      usernameLongEnough;
+
+
+    if (
+      percentage === 100 &&
+      usernameValid
+    ) {
+
+      scanStatus.textContent =
+        "Credential security requirements met.";
+
+      document.getElementById("message")
+        .textContent =
+        "The username meets both requirements and all five password requirements passed.";
+
+    } else {
+
+      scanStatus.textContent =
+        "Security scan complete.";
+
+      document.getElementById("message")
+        .textContent =
+        "Review the requirements marked as missing or too short.";
+
+    }
+
+
+    resetButton.classList.add(
+      "visible"
+    );
+
+
+    scanButton.disabled =
+      false;
+
+  }
+
+
+  /*
+   * SCAN BUTTON
+   */
+
+  scanButton.addEventListener(
+    "click",
+    scanCredentials
+  );
+
+
+  /*
+   * USERNAME ENTER KEY
+   */
+
+  usernameInput.addEventListener(
+    "keydown",
+    function(event) {
+
+      if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        scanCredentials();
+
+      }
+
+    }
+  );
+
+
+  /*
+   * RESET
+   */
+
+  resetButton.addEventListener(
+    "click",
+    function() {
+
+      usernameInput.value =
+        "";
+
+      realPassword =
+        "";
+
+      passwordVisible =
+        false;
+
+      passwordInput.value =
+        "";
+
+      toggleButton.textContent =
+        "Show";
+
+      results.classList.remove(
+        "visible"
+      );
+
+      scanStatus.textContent =
+        "";
+
+      resetButton.classList.remove(
+        "visible"
+      );
+
+      document.getElementById("message")
+        .textContent =
+        "";
+
+      usernameInput.focus();
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
