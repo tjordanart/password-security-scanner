@@ -1,111 +1,149 @@
-Password Security Scanner
+# Password Security Scanner
 
-A Python-based password strength checker that analyzes password security requirements through a terminal interface.
+A Python-based password security utility that analyzes passwords against common security requirements through an interactive terminal interface.
 
-This project was created to practice Python fundamentals including input validation, conditional logic, loops, string processing, and building a simple security-focused utility.
+**Try the scanner:** [tjordanart.com/password-scanner](https://www.tjordanart.com/password-scanner)
 
-⸻
+## Overview
 
-Features
+Password Security Scanner evaluates a password against a set of common security requirements and provides a security score based on the criteria it meets.
 
-* Password strength analysis
-* Length validation
-* Uppercase letter detection
-* Lowercase letter detection
-* Number detection
-* Special character detection
-* Security score calculation
-* Color-coded terminal results
-* Interactive password testing loop
+The project was created to practice Python fundamentals while building a small security-focused utility involving input validation, string processing, conditional logic, loops, and terminal formatting.
 
-⸻
+The scanner performs all analysis locally while the program is running.
 
-Technologies Used
+## Features
 
-* Python 3
-* string - Provides access to punctuation characters for special character checks
-* time - Creates scanning animations and delays
-* ANSI escape codes - Adds terminal color output
+- Password security analysis
+- Minimum length validation
+- Uppercase letter detection
+- Lowercase letter detection
+- Number detection
+- Special character detection
+- Security score calculation
+- Weak, Medium, and Strong ratings
+- Color-coded terminal results
+- Interactive password testing loop
+- Scanning animation and timed output
 
-⸻
+## Security Requirements
 
-How It Works
+The scanner evaluates five criteria:
 
-The Password Security Scanner evaluates a password against five security requirements:
+| Requirement | Description |
+|---|---|
+| **Length** | At least 8 characters |
+| **Uppercase** | Contains at least one uppercase letter |
+| **Lowercase** | Contains at least one lowercase letter |
+| **Number** | Contains at least one number |
+| **Special Character** | Contains at least one special character |
 
-* Minimum length of 8 characters
-* Contains uppercase letters
-* Contains lowercase letters
-* Contains numbers
-* Contains special characters
+Each requirement that is satisfied contributes to the overall security score.
 
-Each requirement passed increases the security score. The program then calculates an overall percentage and assigns a rating:
+The program then calculates a percentage and assigns a rating:
 
-* Weak
-* Medium
-* Strong
+- **Weak**
+- **Medium**
+- **Strong**
 
-The scanner continues running until a password meets all security requirements.
+The interactive loop continues until the user enters a password that satisfies all five requirements.
 
-⸻
+## Technologies & Concepts
 
-How to Run
+- **Python 3**
+- `string` for accessing punctuation characters
+- `time` for scanning animations and timed output
+- ANSI escape codes for terminal formatting
+- User input and validation
+- Conditional logic
+- Loops
+- String processing
+- Variables and data structures
 
-1. Make sure Python 3 is installed.
-2. Clone the repository:
+## How It Works
 
+The program accepts a password from the user and evaluates it against each security requirement.
+
+The scanner checks for:
+
+1. Minimum length
+2. Uppercase characters
+3. Lowercase characters
+4. Numbers
+5. Special characters
+
+Each successful check contributes to the password's security score.
+
+The results are then displayed in the terminal using color-coded output.
+
+## How to Run
+
+### Requirements
+
+- Python 3
+- No external dependencies
+
+### Clone the Repository
+
+```bash id="x9sk3d"
 git clone https://github.com/Tjordanart/password.git
+```
 
-3. Navigate to the project folder:
+### Navigate to the Project
 
+```bash id="j7x9cr"
 cd password
+```
 
-4. Run the program:
+### Run the Scanner
 
+```bash id="k0s8wj"
 python password_checker.py
+```
 
-⸻
+The program will prompt you to enter a password and display the results of the security analysis.
 
-Purpose of This Project
+## Future Improvements
 
-This project was created to practice:
+Potential future enhancements include:
 
-* Python variables
-* User input handling
-* Loops
-* Conditional statements
-* Lists
-* String methods
-* Data validation
-* Program flow
-* Terminal formatting
+- Password entropy calculations
+- More detailed strength analysis
+- Common password detection
+- Password recommendations
+- Secure password generation
+- Additional security requirements
+- Password scan history
+- More advanced security scoring
 
-⸻
+## What I Practiced
 
-Future Improvements
+This project provided practice with:
 
-Possible additions:
+- Python programming fundamentals
+- User input handling
+- Input validation
+- Conditional statements
+- Loops
+- String methods
+- Data structures
+- Program flow
+- Terminal formatting
+- Building a small security-focused application
 
-* Password entropy calculation
-* Estimated password strength scoring
-* Common password detection
-* Password suggestions
-* Secure password generator
-* Save scan history
-* Additional security rules
+## Disclaimer
 
-⸻
+Password Security Scanner is an educational password analysis tool.
 
-Disclaimer
+It does not store or transmit passwords. Passwords are analyzed locally while the program is running.
 
-This project is an educational password analysis tool.
+The scanner uses basic rule-based checks and should not be considered a comprehensive measure of real-world password security.
 
-It does not store, transmit, or collect passwords. Passwords are only analyzed locally while the program is running.
+## Author
 
-⸻
+**Tyler Jordan**
 
-Author
+Computer Engineering Student & Creative Technologist
 
-Created by Tyler Jordan
-
-GitHub: https://github.com/Tjordanart
+[GitHub](https://github.com/Tjordanart)  
+[Portfolio](https://www.tjordanart.com)
